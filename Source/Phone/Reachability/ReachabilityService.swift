@@ -62,28 +62,20 @@ class ReachabilityService {
     }
     
     private func isHostAddressChanged() -> Bool {
-        if hostAddresses == nil {
+        if let hostAddresses = hostAddresses {
+            let newHostAddresses = InterfaceAddress.getSortedAddresses()
+            return !InterfaceAddress.isSameSortedAddresses(oldAddrs: hostAddresses, newAddrs: newHostAddresses)
+        } else {
             return true
         }
-        
-        let newHostAddresses = InterfaceAddress.getSortedAddresses()
-        if InterfaceAddress.isSameSortedAddresses(oldAddrs: hostAddresses!, newAddrs: newHostAddresses) {
-            return false
-        }
-        
-        return true
     }
     
     private func isLastFetchLongEnough() -> Bool {
-        if lastFetchData == nil {
+        if let lastFetchData = lastFetchData {
+            return lastFetchData.timeIntervalSinceNow > MaxAge
+        } else {
             return true
         }
-        
-        if lastFetchData!.timeIntervalSinceNow > MaxAge {
-            return true
-        }
-        
-        return false
     }
     
     private func updateHostAddresses() {

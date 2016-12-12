@@ -128,7 +128,7 @@ class AuthManager {
     private func createAuthCodeRequestURL() -> URL {
         var components = URLComponents(string: "https://api.ciscospark.com/v1/authorize")!
         components.queryItems = [
-            URLQueryItem(name: "client_id", value: (clientAccount?.clientId)!),
+            URLQueryItem(name: "client_id", value: clientAccount!.clientId),
             URLQueryItem(name: "response_type", value: "code"),
             URLQueryItem(name: "redirect_uri", value: redirectUri!.encodeQueryParamString),
             URLQueryItem(name: "scope", value: scope!.encodeQueryParamString),

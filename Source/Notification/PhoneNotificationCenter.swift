@@ -52,9 +52,13 @@ open class PhoneNotificationCenter {
 		fire { $0.refreshAccessTokenFailed() }
     }
 	
-	private func fire(_ closure:(_ observer: PhoneObserver) -> Void) {
-		for observer in observers.allObjects as! [PhoneObserver] {
-			closure(observer)
+	private func fire(_ closure: (_ observer: PhoneObserver) -> Void) {
+		for observer in observers.allObjects {
+            if let observer = observer as? PhoneObserver {
+                closure(observer)
+            } else {
+                Logger.warn("\(observer) is not a PhoneObserver")
+            }
 		}
 	}
 }

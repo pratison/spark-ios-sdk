@@ -25,18 +25,16 @@ class MetricsEngine {
     
     static let sharedInstance = MetricsEngine()
     
-    private let MetricsBufferLimit = 50
-    private let MetricsFlushIntervalSeconds: Double = 30
+    private let metricsBufferLimit = 50
+    private let metricsFlushIntervalSeconds: Double = 30
     private var metricsBuffer = MetricsBuffer()
-    private var periodicFlushTimer: Timer!
+    private lazy var periodicFlushTimer: Timer = Timer(timeInterval: self.metricsFlushIntervalSeconds,
+                                                      target: self,
+                                                      selector: #selector(flush),
+                                                      userInfo: nil,
+                                                      repeats: true)
     
     init() {
-        periodicFlushTimer = Timer(timeInterval: MetricsFlushIntervalSeconds,
-                                        target: self,
-                                        selector: #selector(flush),
-                                        userInfo: nil,
-                                        repeats: true)
-        
         RunLoop.current.add(periodicFlushTimer, forMode: RunLoopMode.commonModes)
     }
     
@@ -51,7 +49,7 @@ class MetricsEngine {
     func trackMetric(_ metric: Metric) {
         metricsBuffer.addMetric(metric)
         
-        if metricsBuffer.count > MetricsBufferLimit {
+        if metricsBuffer.count > metricsBufferLimit {
             flush()
         }
     }
@@ -63,7 +61,7 @@ class MetricsEngine {
     func trackMetrics(_ metrics: [Metric]) {
         metricsBuffer.addMetrics(metrics)
         
-        if metricsBuffer.count > MetricsBufferLimit {
+        if metricsBuffer.count > metricsBufferLimit {
             flush()
         }
     }

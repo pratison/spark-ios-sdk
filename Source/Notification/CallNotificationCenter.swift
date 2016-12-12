@@ -85,8 +85,12 @@ open class CallNotificationCenter {
     }
 	
 	private func fire(_ closure:(_ observer: CallObserver) -> Void) {
-		for observer in observers.allObjects as! [CallObserver] {
-			closure(observer)
+		for observer in observers.allObjects {
+            if let observer = observer as? CallObserver {
+                closure(observer)
+            } else {
+                Logger.warn("\(observer) is not a PhoneObserver")
+            }
 		}
 	}
 }

@@ -47,55 +47,52 @@ class WebSocketService: WebSocketDelegate {
     func connect(_ webSocketUrl: URL) {
         if socket == nil {
             socket = createWebSocket(webSocketUrl)
-            guard socket != nil else {
-                Logger.error("Skip connection due to failure of creating socket")
+        }
+        if let socket = socket {
+            if socket.isConnected {
+                Logger.warn("Web socket is already connected")
                 return
             }
+
+            Logger.info("Web socket is being connected")
+
+            socket.connect()
+
+            scheduleConnectionTimeoutTimer()
+        } else {
+            Logger.error("Skip connection due to failure of creating socket")
         }
-        
-        if socket!.isConnected {
-            Logger.warn("Web socket is already connected")
-            return
-        }
-        
-        Logger.info("Web socket is being connected")
-        
-        socket?.connect()
-        
-        scheduleConnectionTimeoutTimer()
     }
     
     func disconnect() {
-        guard socket != nil else {
+        if let socket = socket {
+            guard socket.isConnected else {
+                Logger.warn("Web socket is already disconnected")
+                return
+            }
+
+            Logger.info("Web socket is being disconnected")
+
+            socket.disconnect()
+            self.socket = nil
+        } else {
             Logger.warn("Web socket has not been connected")
-            return
         }
-        
-        guard socket!.isConnected else {
-            Logger.warn("Web socket is already disconnected")
-            return
-        }
-        
-        Logger.info("Web socket is being disconnected")
-        
-        socket?.disconnect()
-        socket = nil
     }
     
     private func reconnect() {
-        guard socket != nil else {
+        if let socket = socket {
+            guard !socket.isConnected else {
+                Logger.warn("Web socket has already connected")
+                return
+            }
+
+            Logger.info("Web socket is being reconnected")
+
+            socket.connect()
+        } else {
             Logger.warn("Web socket has not been connected")
-            return
         }
-        
-        guard !socket!.isConnected else {
-            Logger.warn("Web socket has already connected")
-            return
-        }
-        
-        Logger.info("Web socket is being reconnected")
-        
-        socket?.connect()
     }
     
     private func createWebSocket(_ webSocketUrl: URL) -> WebSocket? {

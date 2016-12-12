@@ -58,8 +58,8 @@ class CallManager {
         guard let callInfo = callEvent.callInfo else {
             return
         }
-        
-        Logger.info(callEvent.type!)
+
+        Logger.info("\(callEvent.type)")
         
 		handle(callInfo: callInfo)
     }

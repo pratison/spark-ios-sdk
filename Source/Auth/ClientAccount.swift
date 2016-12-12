@@ -23,20 +23,25 @@ import Foundation
 class ClientAccount: NSObject, NSCoding {
     var clientId: String
     var clientSecret: String
-    
+
     private let clientIdKey = "clientIdKey"
     private let clientSecretKey = "clientSecretKey"
-    
+
     init(clientId: String, clientSecret: String) {
         self.clientId = clientId
         self.clientSecret = clientSecret
     }
-    
+
     required init?(coder aDecoder: NSCoder) {
-        clientId = aDecoder.decodeObject(forKey: clientIdKey) as! String
-        clientSecret = aDecoder.decodeObject(forKey: clientSecretKey) as! String
+        if let clientId = aDecoder.decodeObject(forKey: clientIdKey) as? String,
+            let clientSecret = aDecoder.decodeObject(forKey: clientSecretKey) as? String {
+            self.clientId = clientId
+            self.clientSecret = clientSecret
+        } else {
+            return nil
+        }
     }
-    
+
     func encode(with aCoder: NSCoder) {
         aCoder.encode(clientId, forKey: clientIdKey)
         aCoder.encode(clientSecret, forKey: clientSecretKey)

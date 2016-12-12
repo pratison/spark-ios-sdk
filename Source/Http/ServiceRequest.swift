@@ -41,7 +41,7 @@ class ServiceRequest {
     
     
     init() {
-        let userAgent = UserAgent.sharedInstance.userAgentString
+        let userAgent = UserAgent.sharedInstance?.userAgentString
         self.headers = ["Content-Type": "application/json",
                         "User-Agent": userAgent!]
         
@@ -206,6 +206,7 @@ class ServiceRequest {
             }
             urlRequestConvertible = ErrorRequestConvertible(error)
         }
+
 
         return Alamofire.request(urlRequestConvertible).validate()
     }

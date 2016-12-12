@@ -21,34 +21,31 @@
 import WebKit
 
 class ConnectController: UIViewController, WKNavigationDelegate {
-    var webView: WKWebView!
+    var webView: WKWebView
     
     var onWillDismiss: ((_ didCancel: Bool) -> Void)?
     var tryParseAccessCodeFrom: ((_ url: URL) -> Bool)?
     
     var cancelButton: UIBarButtonItem?
     
-    
-    init() {
-        super.init(nibName: nil, bundle: nil)
-    }
-    
     init(URL: URL, parseAccessCodeFrom: @escaping (_ url: URL) -> Bool) {
+        self.webView = WKWebView()
         super.init(nibName: nil, bundle: nil)
         self.startURL = URL
         self.tryParseAccessCodeFrom = parseAccessCodeFrom
     }
-    
+
+    @available(*, unavailable)
     required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
+        fatalError("Tried to initialize ConnectController with an unused constructor")
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.title = "Link to Spark"
-        self.webView = WKWebView(frame: self.view.bounds)
         self.view.addSubview(self.webView)
-        
+
+        self.webView.frame = self.view.bounds
         self.webView.navigationDelegate = self
         
         self.view.backgroundColor = .white
@@ -60,10 +57,9 @@ class ConnectController: UIViewController, WKNavigationDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         if !webView.canGoBack {
-            if nil != startURL {
-				load(url: startURL!)
-            }
-            else {
+            if let startURL = startURL {
+				load(url: startURL)
+            } else {
                 webView.loadHTMLString("There is no `startURL`", baseURL: nil)
             }
         }
@@ -81,8 +77,8 @@ class ConnectController: UIViewController, WKNavigationDelegate {
     
     var startURL: URL? {
         didSet(oldURL) {
-            if nil != startURL && nil == oldURL && isViewLoaded {
-				load(url: startURL!)
+            if let startURL = startURL, oldURL == nil, isViewLoaded {
+                load(url: startURL)
             }
         }
     }

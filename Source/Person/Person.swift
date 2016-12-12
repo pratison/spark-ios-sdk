@@ -60,14 +60,23 @@ public struct Person: Mappable {
         typealias Object = [EmailAddress]
         typealias JSON = [String]
         
-        func transformFromJSON(_ value: Any?) -> Object?{
+        func transformFromJSON(_ value: Any?) -> Object? {
             var emails: [EmailAddress] = []
-            let emailStrings = value as! [String]
-            for emailString in emailStrings {
-                emails.append(EmailAddress.fromString(emailString)!)
+            if let value = value as? [String] {
+                let emailStrings = value
+
+                for emailString in emailStrings {
+                    if let emailAddress = EmailAddress.fromString(emailString) {
+                        emails.append(emailAddress)
+                    } else {
+                        Logger.warn("\(emailString) is not a properly formatted email address")
+                    }
+                }
+
+                return emails
+            } else {
+                return nil
             }
-            
-            return emails
         }
         
         func transformToJSON(_ value: Object?) -> JSON? {
